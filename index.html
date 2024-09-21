@@ -14,10 +14,14 @@
   </div>
 
   <script>
-    // Handle login events
+   // Check if the user is already logged in
+    if (netlifyIdentity.currentUser()) {
+      window.location.href = 'main.html'; // Redirect to main page if logged in
+    }
+
+    // Handle login event and redirect to main.html after successful login
     netlifyIdentity.on("login", () => {
-      // Redirect to the main page after login
-      window.location.href = 'main.html';
+      window.location.href = 'main.html'; // Redirect to main page after login
     });
   </script>
 </body>
