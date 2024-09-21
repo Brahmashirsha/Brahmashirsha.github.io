@@ -177,17 +177,16 @@
     <script>
 
 // Redirect to login page if user is not logged in
+    // Check if user is logged in
     if (!netlifyIdentity.currentUser()) {
-      window.location.href = 'index.html'; // Redirect to login page if no user
+      window.location.href = 'index.html'; // Redirect to login page if user is not logged in
     }
 
-    // Handle logout
-    netlifyIdentity.on("logout", () => {
-      console.log("User logged out");
-      // Redirect to login page after logout
-      window.location.href = 'index.html';
-    });
-
+    // Function to log out the user and redirect to login page
+    function logoutUser() {
+      netlifyIdentity.logout();
+      window.location.href = 'index.html'; // Redirect to login page after logout
+    }
 
 
 	    
