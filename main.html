@@ -176,17 +176,17 @@
 
     <script>
 
- //if (!netlifyIdentity.currentUser()) {
-    // window.location.href = 'index.html'; // If not logged in, redirect to login page
-  // }
+// Check if the user is logged in; if not, redirect to login page
+    if (!netlifyIdentity.currentUser()) {
+      window.location.href = 'index.html'; // Redirect to login page if not logged in
+    }
 
     // Function to log out the user and redirect to login page
     function logoutUser() {
-      netlifyIdentity.logout();
-      window.location.href = 'index.html'; // Redirect to login page after logout
+      netlifyIdentity.logout().then(() => {
+        window.location.href = 'index.html'; // Redirect to login page after logout
+      });
     }
-
-
 	    
 
 document.getElementById("entity").addEventListener("input", function() {
