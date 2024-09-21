@@ -30,20 +30,39 @@
       color: #333;
       margin-bottom: 20px;
     }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="login-container">
     <h2>Login to Access the Content</h2>
+    <button onclick="netlifyIdentity.open()">Login</button>
   </div>
 
   <script>
     // Check if the user is already logged in
     if (netlifyIdentity.currentUser()) {
       window.location.href = 'main.html'; // Redirect to main page if logged in
-    } else {
-      // Automatically open the login modal when the page loads
-      netlifyIdentity.open();
     }
 
     // Handle login event and redirect to main.html after successful login
