@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+	<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
@@ -130,7 +132,8 @@
     <div class="container">
         <h1>Servizing Society Revamp By Rajiv</h1>
         
-   
+   <button onclick="netlifyIdentity.open()">Login</button>
+    <button onclick="netlifyIdentity.logout()">Logout</button>
 
         <!-- Dropdown for Society ID -->
         <label for="society">Society ID:</label>
@@ -172,6 +175,35 @@
     </div>
 
     <script>
+
+ netlifyIdentity.on("login", user => {
+      console.log("User logged in: ", user);
+      document.getElementById('protected-content').style.display = 'block'; // Show protected content
+    });
+
+    netlifyIdentity.on("logout", () => {
+      console.log("User logged out");
+      document.getElementById('protected-content').style.display = 'none'; // Hide protected content
+    });
+
+    // Check if a user is already logged in when the page loads
+    if (netlifyIdentity.currentUser()) {
+      document.getElementById('protected-content').style.display = 'block';
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    
   document.getElementById("entity").addEventListener("input", function() {
     this.value = this.value.toUpperCase();
   });
