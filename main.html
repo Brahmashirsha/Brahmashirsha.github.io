@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revamp By Rajiv</title>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+  color: #fdf8fa;
+  padding: 20px 0;
+  background: #0a0b0b;
+  border-radius: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+               transform: scale(1.1);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        #tableContainer table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #tableContainer th, #tableContainer td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        #tableContainer th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        #tableContainer tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #tableContainer tr:hover {
+            background-color: #f1f1f1;
+        }
+        .hide-date td {
+            display: none;
+        }
+        .hide-date th {
+            display: none;
+        }
+        #currentOutstanding {
+            font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #333;
+  background: border-box;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  align-content: ;
+  width: 305px;
+        }
+
+    .icon-button {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .icon-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .icon-button img:hover {
+        transform: rotate(05deg);
+    }
+
+    .icon-button:active {
+        transform: scale(0.95);
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Servizing Society Revamp By Rajiv</h1>
+        
+   
+
+        <!-- Dropdown for Society ID -->
+        <label for="society">Society ID:</label>
+        <select id="society">
+            <option value="6979f028-6874-34f9-9cca-1f7531b5dd19">JLPL82</option>
+            <option value="6a19ddd8-901f-1880-082b-e1fff287816d">JLPL91</option>
+            <option value="54b4677e-7ea8-693c-4f84-ca75fda696aa">JLPL66A</option>
+            <option value="c29acd04-4051-2a60-6ca9-1f6fc1aa5f0c">JLPL94</option>
+            <option value="e40a2e8a-3186-ec89-1696-5c95487b5c4f">FV</option>
+        </select>
+        
+        <!-- Input for Entity ID -->
+        <label for="entity">Entity ID:</label>
+        <input type="text" id="entity"placeholder="Enter Entity ID" required>
+
+
+        
+        <!-- Dropdown for Cutoff Date -->
+        <label for="cutoffDate">LPS CUTT OFF DATE:</label>
+        <select id="cutoffDate">
+            <option value="2023-12-31">December 31, 2023</option>
+            <option value="2024-01-31">January 31, 2024</option>
+        </select>
+<!-- Display current outstanding amount -->
+        <div id="currentOutstanding">Current Outstanding:</div>
+        
+         <button class="icon-button" id="fetchData" title="Fetch Statement">
+        <img src="statement.png" alt="Gen Statement" style="width: 55px; height: 55px;" />
+    </button>
+    <button class="icon-button" id="downloadExcel" title="Download Excel">
+         <img src="excel.png" alt="Download Excel" style="width: 55px; height: 55px;" />
+    </button>
+
+   <button class="icon-button" id="downloadPDF" title="Download PDF">
+    <img src="pdf.png" alt="Download PDF" style="width: 55px; height: 55px;" />
+</button>
+
+     
+        
+        <div id="tableContainer"></div> <!-- This will display the table -->
+    </div>
+
+    <script>
+
+document.getElementById("entity").addEventListener("input", function() {
+    this.value = this.value.toUpperCase();
+  });
+
+
+
+
+ document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            
+        });
+
+
+    document.addEventListener('keydown', function(event) {
+        // Prevent F12 (Developer Tools)
+        if (event.key === "F12") {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+Shift+I (Developer Tools)
+        if (event.ctrlKey && event.shiftKey && event.key === "I") {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+Shift+J (Console)
+        if (event.ctrlKey && event.shiftKey && event.key === "J") {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+U (View Source)
+        if (event.ctrlKey && event.key === "U") {
+            event.preventDefault();
+        }
+    });
+
+
+    (function preventDebugging() {
+        if (window.console && (console.log || console.warn || console.error)) {
+            setInterval(function () {
+                debugger; // Triggers the debugger every 100ms
+            }, 100);
+        }
+    })();
+
+
+
+
+
+
+
+
+        function formatDate(dateStr) {
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const parts = dateStr.split(' ');
+            const month = monthNames.indexOf(parts[0]);
+            const day = parts[1].replace(',', '');
+            const year = parts[2];
+            return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+
+        function convertBillDateToISO(dateStr) {
+            const datePattern = /^\d{2}\/\d{2}\/\d{4}$/; // MM/DD/YYYY
+            if (!datePattern.test(dateStr)) {
+                return ''; // Return an empty string if not in the correct format
+            }
+
+            const [month, day, year] = dateStr.split('/');
+            return `${year}-${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}`;
+        }
+
+        function isDateBeforeOrOnCutoff(dateStr, cutoffDateStr) {
+            const date = new Date(dateStr);
+            const cutoffDate = new Date(cutoffDateStr);
+            return date <= cutoffDate;
+        }
+
+        document.getElementById('fetchData').addEventListener('click', function () {
+            const societyId = document.getElementById('society').value;
+            const entityId = document.getElementById('entity').value.trim();
+            const cutoffDateStr = document.getElementById('cutoffDate').value;
+
+            if (!entityId) {
+                alert('Please enter an Entity ID.');
+                return;
+            }
+
+            const urlStatement = 'https://www.servizing.com/service/account/statement/entity';
+            const payloadStatement = {
+                society_id: societyId,
+                entity_id: entityId
+            };
+
+            const urlBill = 'https://www.servizing.com/service/account/bill/view_all';
+            const payloadBill = {
+                society_id: societyId,
+                limit: '100',
+                page: '1',
+                entity_id: entityId
+            };
+
+            Promise.all([
+                fetch(urlStatement, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                    body: JSON.stringify(payloadStatement)
+                }).then(response => response.json()),
+
+                fetch(urlBill, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                    body: JSON.stringify(payloadBill)
+                }).then(response => response.json())
+            ])
+            .then(([dataStatement, dataBill]) => {
+                console.log('Statement Data:', dataStatement);
+                console.log('Bill Data:', dataBill);
+
+                // Display current outstanding amount
+                const currentOutstanding = dataStatement.data && dataStatement.data.current_outstanding ? dataStatement.data.current_outstanding : 'N/A';
+                document.getElementById('currentOutstanding').textContent = `Current Outstanding: ${currentOutstanding}`;
+
+                const statementEntries = dataStatement.data && dataStatement.data.transactions ? dataStatement.data.transactions : [];
+                console.log('Statement Entries:', statementEntries);
+
+                const lpsData = [];
+                const billEntries = dataBill.data && Array.isArray(dataBill.data) ? dataBill.data : [];
+                console.log('Bill Entries:', billEntries);
+
+                // Extracting entity details from the first 8 entries
+                const entityDetails = [];
+                for (let i = 0; i < 8; i++) {
+                    if (statementEntries[i] && statementEntries[i][' ']) {
+                        entityDetails.push(statementEntries[i][' '].trim());
+                    }
+                }
+
+                console.log('Entity Details:', entityDetails);
+
+                billEntries.forEach(entry => {
+                    const invoiceDate = entry['Invoice Date'] || '';
+                    const lps = parseFloat(entry['LPS']) || 0;
+                    const formattedDate = convertBillDateToISO(invoiceDate.trim());
+                    if (formattedDate && lps > 0 && isDateBeforeOrOnCutoff(formattedDate, cutoffDateStr)) {
+                        lpsData.push({
+                            Date: formattedDate,
+                            LPS: lps
+                        });
+                    }
+                });
+
+                console.log('Filtered and Aggregated LPS Data:', lpsData);
+
+                const combinedData = [];
+
+                // Add entity details as separate rows in the table
+                entityDetails.forEach((detail, index) => {
+                    combinedData.push({
+                        EntityData: detail,
+                        Date: '', // Empty for entity details rows
+                        CR: '',
+                        DR: '',
+                        RunningBalance: '',
+                        AuditTime: '',
+                        BankName: '', // New field
+                        PaymentRef: '', // New field
+                        PaymentMode: '', // New field
+                        BlankColumn: ''
+                    });
+                });
+
+                statementEntries.slice(8).forEach(entry => { // Skip the first 8 entries (entity details)
+                    const auditDate = formatDate(entry['Transaction Audit Time'] || '');
+                    const dr = parseFloat(entry['DR']) || 0;
+                    const cr = parseFloat(entry['CR']) || 0;
+
+                    combinedData.push({
+                        EntityData: '', // No entity data for transaction rows
+                        Date: auditDate,
+                        CR: cr,
+                        DR: dr,
+                        RunningBalance: '', // To be calculated
+                        AuditTime: entry['Transaction Audit Time'] || '',
+                        BankName: entry['Bank Name'] || '', // Include the new field
+                        PaymentRef: entry['Payment Reference'] || '', // Include the new field
+                        PaymentMode: cr > dr ? 'CR' : 'DR', // Determine the payment mode
+                        BlankColumn: ''
+                    });
+                });
+
+                function formatDateForExcel(dateStr) {
+                    const date = new Date(dateStr);
+                    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                    return date.toLocaleDateString('en-US', options);
+                }
+
+                lpsData.forEach(lpsEntry => {
+                    const formattedDate = formatDateForExcel(lpsEntry.Date);
+                    const roundedLPS = roundNumber(lpsEntry.LPS, 0);
+                    const index = combinedData.findIndex(item => item.Date === lpsEntry.Date);
+                    if (index !== -1) {
+                        combinedData.splice(index + 1, 0, {
+                            EntityData: '', // No entity data for LPS rows
+                            Date: formattedDate, // Format the date here
+                            CR: 0,
+                            DR: lpsEntry.LPS,
+                            RunningBalance: '', // To be calculated
+                            AuditTime: formattedDate, // Use formatted date as Audit Time
+                            BankName: '',
+                            PaymentRef: '',
+                            PaymentMode: 'LPS', // Set Payment Mode to LPS
+                            BlankColumn: ''
+                        });
+                    }
+                });
+
+                function roundNumber(num, decimalPlaces) {
+                    return Number(num.toFixed(decimalPlaces));
+                }
+
+                combinedData.forEach(item => {
+                    item.DR = roundNumber(parseFloat(item.DR) || 0, 0.9); // Round DR to 2 decimal places
+                });
+
+                console.log('Combined Data with LPS Rows:', combinedData);
+
+                let currentBalance = 0; // Initialize with zero or the initial balance
+
+                combinedData.forEach((item, index) => {
+                    // Only calculate the balance for rows that have valid CR or DR values
+                    if (index >= entityDetails.length) { // Skip entity details rows for balance calculation
+                        const cr = parseFloat(item.CR) || 0;
+                        const dr = parseFloat(item.DR) || 0;
+                        currentBalance = currentBalance + dr - cr;
+                    }
+                    item.RunningBalance = currentBalance !== 0 ? parseFloat(currentBalance.toFixed(0)) : ''; // Avoid adding '0' for balance
+                });
+
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = '';
+
+                if (combinedData.length > 0) {
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+
+                    const tr = document.createElement('tr');
+                    ['Entity Data','CR', 'DR', 'Running Balance', 'Payment Mode', 'Bank Name', 'Payment Reference', 'Audit Time'].forEach(field => {
+                        const th = document.createElement('th');
+                        th.textContent = field;
+                        tr.appendChild(th);
+                    });
+                    thead.appendChild(tr);
+                    table.appendChild(thead);
+
+                    combinedData.forEach(item => {
+                        const tr = document.createElement('tr');
+                        ['EntityData','CR', 'DR', 'RunningBalance', 'PaymentMode', 'BankName', 'PaymentRef', 'AuditTime'].forEach(field => {
+                            const td = document.createElement('td');
+                            td.textContent = item[field] || '';
+                            tr.appendChild(td);
+                        });
+
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    tableContainer.appendChild(table);
+                } else {
+                    tableContainer.textContent = 'No data available.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = 'An error occurred while fetching data.';
+            });
+        });
+
+document.getElementById('downloadExcel').addEventListener('click', function () {
+    const table = document.querySelector('table');
+    if (!table) {
+        alert('No data to download.');
+        return;
+    }
+
+    // Get the Entity ID value
+    const entityId = document.getElementById('entity').value.trim();
+
+    // Set the filename to the Entity ID
+    const filename = entityId ? `${entityId}_data.xlsx` : 'combined_data.xlsx';
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    // Add table headers
+    const headers = [];
+    table.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
+    worksheet.addRow(headers);
+
+    // Get column indices for CR, DR, RUNNING BALANCE, PAYMENT MODE, and BANK NAME
+    const crIndex = headers.indexOf('CR') + 1; // Adding 1 to match Excel's 1-based indexing
+    const drIndex = headers.indexOf('DR') + 1;
+    const runningBalanceIndex = headers.indexOf('Running Balance') + 1;
+    const paymentModeIndex = headers.indexOf('Payment Mode') + 1;
+    const bankNameIndex = headers.indexOf('Bank Name') + 1;
+
+    // Add table rows with blank cell replacement and Payment Mode adjustment
+    let rowIndex = 2; // Start after the headers
+    table.querySelectorAll('tbody tr').forEach((row, rowNum) => {
+        const rowData = [];
+        const rowCells = row.querySelectorAll('td');
+        const bankNameValue = rowCells[bankNameIndex - 1] ? rowCells[bankNameIndex - 1].textContent.trim() : '';
+
+        rowCells.forEach((td, index) => {
+            let cellValue = td.textContent.trim();
+            if (index + 1 === paymentModeIndex) {
+                // Convert DR to Bill unless it's a Debit Note
+                if (cellValue === 'DR' && bankNameValue !== 'Debit Note') {
+                    cellValue = 'Bill';
+                }
+            }
+            if (rowNum >= 8) { // Apply zero only after the 8th row
+                if (index + 1 === crIndex || index + 1 === drIndex || index + 1 === runningBalanceIndex) {
+                    cellValue = cellValue === '' ? 0 : parseFloat(cellValue) || 0;
+                }
+            }
+            rowData.push(cellValue);
+        });
+        worksheet.addRow(rowData);
+        rowIndex++;
+    });
+
+
+
+const headerRow = worksheet.getRow(1);
+headerRow.eachCell({ includeEmpty: true }, (cell) => {
+    cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '87CEEB' } // Sky blue color
+    };
+    cell.font = {
+    name: 'Arial',
+    size: 12,
+    bold: true,
+    
+   
+};
+});
+    // Apply border, styling, and auto-fit to all cells
+worksheet.eachRow({ includeEmpty: true }, function(row, rowNumber) {
+    let maxRowHeight = 15; // Default minimum row height
+    row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        // Apply border to each cell
+        cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+        };
+        cell.alignment = { vertical: 'middle', horizontal: 'left' };
+
+        // Auto-fit column width based on the content
+        const column = worksheet.getColumn(colNumber);
+        column.width = Math.max(column.width || 10, cell.value ? cell.value.toString().length + 2 : 10);
+
+        // Calculate and set the row height based on content
+        if (cell.value) {
+            const cellValueLength = cell.value.toString().length;
+            const rowHeight = Math.ceil(cellValueLength / (column.width || 10)) * 15;
+            maxRowHeight = Math.max(maxRowHeight, rowHeight);
+        }
+    });
+
+    // Set the calculated row height
+    row.height = maxRowHeight;
+});
+
+
+
+
+
+
+    // Add formula for RUNNING BALANCE starting from D11
+    const startRow = 11;
+    const endRow = rowIndex - 1; // Last row number
+    if (endRow >= startRow) {
+        worksheet.getCell(`D${startRow}`).value = { formula: `D${startRow - 1} + C${startRow} - B${startRow}` };
+
+        // Apply formula to all rows below the starting row
+        for (let i = startRow + 1; i <= endRow; i++) {
+            worksheet.getCell(`D${i}`).value = { formula: `D${i - 1} + C${i} - B${i}` };
+        }
+    }
+
+    // Generate Excel file
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+});
+
+
+
+document.getElementById('downloadPDF').addEventListener('click', async function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'p', // Portrait orientation
+        unit: 'mm', // Units in millimeters
+        format: 'a4' // A4 size
+    });
+
+    const table = document.querySelector('table');
+    if (table) {
+        const headers = [];
+        table.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
+
+        // Get column indices for CR, DR, and Running Balance
+        const crIndex = headers.indexOf('CR');
+        const drIndex = headers.indexOf('DR');
+        const runningBalanceIndex = headers.indexOf('Running Balance');
+
+        const rows = [];
+        table.querySelectorAll('tbody tr').forEach((row, rowNum) => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach((td, index) => {
+                let cellValue = td.textContent.trim();
+                if (rowNum >= 8) { // Apply zero only after the 9th row
+                    if (index === crIndex || index === drIndex || index === runningBalanceIndex) {
+                        cellValue = cellValue === '' ? '0' : cellValue;
+                    }
+                }
+                rowData.push(cellValue);
+            });
+            rows.push(rowData);
+        });
+
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            theme: 'striped',
+            margin: { top: 10, bottom: 10, left: 10, right: 10 }, // Small margins
+            styles: {
+                fontSize: 6, // Smaller font size to fit more data
+                cellPadding: 1, // Less padding
+                overflow: 'linebreak' // Break lines if necessary
+            },
+            columnStyles: {
+                // Adjust column widths to fit data
+                0: { cellWidth: 40 },
+                1: { cellWidth: 10 },
+                // Add more column styles if needed
+            },
+            didDrawPage: function (data) {
+                // Optional: Add page numbers or headers
+            },
+            pageBreak: 'auto' // Allow page breaks
+        });
+
+        const entityId = document.getElementById('entity').value.trim();
+        const filename = entityId ? `${entityId}_data.pdf` : 'combined_data.pdf';
+        doc.save(filename);
+    } else {
+        alert('No data to download.');
+    }
+});
+
+
+    </script>
+</body>
+</html>
