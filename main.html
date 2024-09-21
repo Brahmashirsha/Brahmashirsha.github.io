@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.1/dist/exceljs.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+	  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
@@ -130,7 +131,7 @@
     <div class="container">
         <h1>Servizing Society Revamp By Rajiv</h1>
         
-   
+   <button onclick="netlifyIdentity.logout()">Logout</button>
 
         <!-- Dropdown for Society ID -->
         <label for="society">Society ID:</label>
@@ -174,6 +175,22 @@
     </div>
 
     <script>
+
+// Redirect to login page if user is not logged in
+    if (!netlifyIdentity.currentUser()) {
+      window.location.href = 'login.html'; // Redirect to login page if no user
+    }
+
+    // Handle logout
+    netlifyIdentity.on("logout", () => {
+      console.log("User logged out");
+      // Redirect to login page after logout
+      window.location.href = 'login.html';
+    });
+
+
+
+	    
 
 document.getElementById("entity").addEventListener("input", function() {
     this.value = this.value.toUpperCase();
