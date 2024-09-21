@@ -6,15 +6,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Page</title>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
     <h2>Login to Access the Content</h2>
-<!--     <button onclick="netlifyIdentity.open()">Login</button> -->
   </div>
 
   <script>
-   // Check if the user is already logged in
     // Check if the user is already logged in
     if (netlifyIdentity.currentUser()) {
       window.location.href = 'main.html'; // Redirect to main page if logged in
