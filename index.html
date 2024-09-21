@@ -10,13 +10,17 @@
 <body>
   <div class="login-container">
     <h2>Login to Access the Content</h2>
-    <button onclick="netlifyIdentity.open()">Login</button>
+<!--     <button onclick="netlifyIdentity.open()">Login</button> -->
   </div>
 
   <script>
    // Check if the user is already logged in
+    // Check if the user is already logged in
     if (netlifyIdentity.currentUser()) {
       window.location.href = 'main.html'; // Redirect to main page if logged in
+    } else {
+      // Automatically open the login modal when the page loads
+      netlifyIdentity.open();
     }
 
     // Handle login event and redirect to main.html after successful login
